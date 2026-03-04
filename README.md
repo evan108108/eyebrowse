@@ -1,10 +1,35 @@
 # Eyebrowse
 
-Give your AI agent eyes and hands in the browser.
+**Give your AI agent eyes and hands in the browser.**
+
+Eyebrowse is an MCP server that connects AI coding agents to real Chrome browsers. Not headless. Not isolated. Your browser, your session, AI-assisted.
 
 ## What is Eyebrowse?
 
-Eyebrowse connects AI coding agents to real Chrome browsers through the Model Context Protocol (MCP). It lets Claude Code see screenshots, read page structure via accessibility trees, and interact with pages -- clicking, typing, scrolling, and navigating -- all through a local three-layer architecture that keeps everything on your machine.
+Eyebrowse bridges AI agents and Chrome through the [Model Context Protocol](https://modelcontextprotocol.io/) (MCP). Your AI sees screenshots, reads page structure via accessibility trees, and interacts with pages -- clicking, typing, scrolling, navigating -- all in a real Chrome window you can watch and use alongside it.
+
+Unlike headless browser tools, Eyebrowse operates in your actual browser. Same cookies, same logins, same tabs. The AI is a copilot in your browser, not a robot in a hidden one.
+
+## Why Eyebrowse?
+
+| | Eyebrowse | Playwright/Puppeteer MCP | Headless agents |
+|---|---|---|---|
+| Browser | Your real Chrome | Hidden headless browser | Hidden headless browser |
+| Session | Shared -- your cookies, logins, state | Isolated -- starts fresh | Isolated |
+| Visibility | You see everything the AI does | Invisible | Invisible |
+| Interaction | AI and human use the same window | AI only | AI only |
+| Setup | Extension + daemon | npm package | Varies |
+
+## Use Cases
+
+- **Web scraping** -- "Search for X on these 5 sites, extract prices and links" (supports parallel workers with separate windows)
+- **QA review** -- "Look at this page and tell me what's broken"
+- **Form filling** -- "Fill out this application with these details"
+- **Research** -- "Find recent articles about Y, summarize the top 3"
+- **Page capture** -- "Save this page as a PDF" or "Take a screenshot of the dashboard"
+- **Debugging** -- "Open localhost:3000, click the login button, tell me what happens"
+- **Monitoring** -- watch a page for changes using your existing logged-in session
+- **Workflow automation** -- automate repetitive browser tasks in your authenticated session
 
 ## Features
 
@@ -19,9 +44,11 @@ Eyebrowse connects AI coding agents to real Chrome browsers through the Model Co
 
 ## Quick Install
 
-> Coming soon: `npx eyebrowse install`
+```sh
+npx eyebrowse install
+```
 
-For now, follow the manual setup below.
+The installer checks prerequisites, configures Claude Code's MCP settings, and walks you through loading the Chrome extension. See [Manual Setup](#manual-setup) if you prefer to do it yourself.
 
 ## Manual Setup
 
@@ -128,7 +155,7 @@ Replace `/path/to/eyebrowse` with the actual path where you cloned the repo.
 
 ## Security
 
-Eyebrowse is designed for local development use. All communication stays on your machine.
+Eyebrowse operates entirely locally. Your data never leaves your machine. No cloud services, no telemetry, no external connections.
 
 - **Local-only** -- The daemon binds to `localhost:7890`. The extension connects only to `ws://localhost:7890/ws`.
 - **Token authentication** -- The daemon generates a random UUID token on first run, stored at `~/.eyebrowse/daemon.token` with `0600` permissions. All HTTP requests require this token as a Bearer header. Constant-time comparison prevents timing attacks.
