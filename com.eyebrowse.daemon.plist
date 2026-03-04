@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.eyebrowse.daemon</string>
+	<key>Program</key>
+	<string>__BUN_PATH__</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>__BUN_PATH__</string>
+		<string>run</string>
+		<string>__EYEBROWSE_HOME__/daemon/index.ts</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>__EYEBROWSE_HOME__</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>/tmp/eyebrowse-daemon-stdout.log</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/eyebrowse-daemon.log</string>
+	<key>ThrottleInterval</key>
+	<integer>5</integer>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>__BUN_DIR__:/usr/local/bin:/usr/bin:/bin</string>
+	</dict>
+</dict>
+</plist>

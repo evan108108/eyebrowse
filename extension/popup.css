@@ -1,0 +1,211 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 300px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  background: #1a1a2e;
+  color: #e0e0e0;
+}
+
+.popup {
+  padding: 14px 16px;
+}
+
+/* --- Header --- */
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.connected {
+  background: #4caf50;
+  box-shadow: 0 0 4px #4caf5088;
+}
+
+.status-dot.disconnected {
+  background: #f44336;
+  box-shadow: 0 0 4px #f4433688;
+}
+
+/* --- Daemon status --- */
+
+.daemon-status {
+  background: #16213e;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.daemon-status.hidden {
+  display: none;
+}
+
+.daemon-message {
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.daemon-message code {
+  background: #0f3460;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #e0e0e0;
+}
+
+/* --- Paired status --- */
+
+.paired-status {
+  background: #16213e;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #888;
+}
+
+.paired-status .active {
+  color: #4caf50;
+}
+
+/* --- Sessions --- */
+
+.sessions h2 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+#session-list {
+  list-style: none;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.session-item:hover {
+  background: #16213e;
+}
+
+.session-item.paired {
+  background: #16213e;
+}
+
+.session-name {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.empty-state {
+  font-size: 12px;
+  color: #555;
+  padding: 8px;
+  text-align: center;
+}
+
+/* --- Buttons --- */
+
+.btn {
+  padding: 3px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  outline: none;
+  transition: background 0.15s;
+}
+
+.btn:focus,
+.btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.btn-connect {
+  background: #4caf50;
+  color: #fff;
+}
+
+.btn-connect:hover {
+  background: #43a047;
+}
+
+.btn-disconnect {
+  background: #f44336;
+  color: #fff;
+}
+
+.btn-disconnect:hover {
+  background: #e53935;
+}
+
+/* --- Hotkey reminder --- */
+
+.hotkey-reminder {
+  text-align: center;
+  font-size: 11px;
+  color: #555;
+  margin-top: 14px;
+  padding: 6px 0;
+  border-top: 1px solid #ffffff0a;
+}
+
+/* --- Footer --- */
+
+footer {
+  text-align: center;
+  font-size: 10px;
+  color: #444;
+  margin-top: 8px;
+}
+
+/* --- Scrollbar --- */
+
+#session-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+#session-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#session-list::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 2px;
+}

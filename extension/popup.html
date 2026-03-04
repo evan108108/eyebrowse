@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <header>
+      <h1>Eyebrowse</h1>
+      <span id="status-dot" class="status-dot disconnected"></span>
+    </header>
+
+    <section id="daemon-status" class="daemon-status hidden">
+      <p class="daemon-message">Daemon not running. Start it with:<br><code>bun run ~/memory/eyebrowse/daemon/index.ts</code></p>
+    </section>
+
+    <section class="paired-status">
+      <span id="paired-label">Not paired</span>
+    </section>
+
+    <section class="sessions">
+      <h2>Sessions</h2>
+      <ul id="session-list">
+        <li class="empty-state">Loading…</li>
+      </ul>
+    </section>
+
+    <div class="hotkey-reminder">⌘⇧. to capture page</div>
+
+    <footer>Eyebrowse v0.1.0</footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

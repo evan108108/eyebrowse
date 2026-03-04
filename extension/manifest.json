@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Eyebrowse",
+  "version": "0.1.0",
+  "description": "Shared browser session for Claude Code",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "debugger", "tabs", "scripting", "storage", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "commands": {
+    "hey-sona": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Period",
+        "mac": "Command+Shift+Period"
+      },
+      "description": "Hey Sona — capture current page"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
