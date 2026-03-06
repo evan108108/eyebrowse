@@ -17,6 +17,7 @@ const CDP_ALLOWLIST = new Set([
   "Accessibility.getFullAXTree",
   "Accessibility.getPartialAXTree",
   "Page.printToPDF",
+  "Runtime.evaluate",
 ]);
 
 // ---------------------------------------------------------------------------
@@ -312,6 +313,42 @@ async function handleNavigate(params, windowId) {
   return { url: updatedTab.url, title: updatedTab.title };
 }
 
+async function handleEvaluate(params, windowId) {
+  const tab = await getTargetTab(windowId);
+  if (!tab) throw new Error("No active tab for evaluate");
+  const { expression } = params;
+  if (!expression || typeof expression !== "string") {
+    throw new Error("expression (string) required");
+  }
+
+  const url = tab.url || "";
+  if (url.startsWith("chrome://") || url.startsWith("chrome-extension://") || url.startsWith("about:")) {
+    throw new Error(`Cannot evaluate on restricted page: ${url}`);
+  }
+
+  const target = { tabId: tab.id };
+  try {
+    await chrome.debugger.attach(target, "1.3");
+  } catch (e) {
+    throw new Error(`Debugger attach failed: ${e.message}`);
+  }
+
+  try {
+    const result = await chrome.debugger.sendCommand(target, "Runtime.evaluate", {
+      expression: `JSON.stringify(${expression})`,
+      returnByValue: true,
+    });
+    if (result.exceptionDetails) {
+      throw new Error(result.exceptionDetails.text || "Evaluation error");
+    }
+    const raw = result.result?.value;
+    try { return { result: JSON.parse(raw) }; }
+    catch { return { result: raw }; }
+  } finally {
+    try { await chrome.debugger.detach(target); } catch (_) {}
+  }
+}
+
 // Dispatch table
 const REQUEST_HANDLERS = {
   screenshot: handleScreenshot,
@@ -322,6 +359,7 @@ const REQUEST_HANDLERS = {
   overlay: handleOverlay,
   interact: handleInteract,
   navigate: handleNavigate,
+  evaluate: handleEvaluate,
   "list-tabs": handleListTabs,
   "switch-tab": handleSwitchTab,
   "close-window": handleCloseWindow,

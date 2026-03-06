@@ -340,6 +340,15 @@ server.tool(
 );
 
 server.tool(
+  "evaluate",
+  "Execute a JavaScript expression in the current page and return the result. Use for extracting data from the DOM (e.g., links, text content, structured data).",
+  {
+    expression: z.string().describe("JavaScript expression to evaluate in the page context. Must return a JSON-serializable value."),
+  },
+  async ({ expression }) => callDaemonTool("evaluate", { expression })
+);
+
+server.tool(
   "click",
   "Click an element on the page. Use a CSS selector to target the element, or provide x/y coordinates to click at a specific viewport position.",
   {

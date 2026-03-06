@@ -664,6 +664,24 @@ async function executeTool(
       };
     }
 
+    case "evaluate": {
+      if (!pairedWindow) return { success: false, error: "No browser connected." };
+      const expression = params.expression as string;
+      if (!expression) return { success: false, error: "expression required" };
+
+      const reqId = crypto.randomUUID();
+      const response = await sendRequest({
+        requestId: reqId,
+        sessionId,
+        action: "evaluate",
+        params: { expression },
+      });
+
+      return response.success
+        ? { success: true, data: response.data }
+        : { success: false, error: response.error };
+    }
+
     case "navigate": {
       if (!pairedWindow) return { success: false, error: "No browser connected." };
 
