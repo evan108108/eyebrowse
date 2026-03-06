@@ -39,6 +39,7 @@ Unlike headless browser tools, Eyebrowse operates in your actual browser. Same c
 - **Multi-window and multi-tab** -- pair specific windows to sessions, list and switch tabs
 - **Highlights and annotations** -- overlay elements with colored highlights, callout annotations, or toast messages
 - **Print to PDF** -- export pages with configurable paper size, orientation, and page ranges
+- **Evaluate JavaScript** -- run expressions in the page context and return structured data, ideal for bulk DOM extraction
 - **Auto-start daemon** -- MCP server spawns the daemon automatically on first tool call
 - **Session isolation** -- each Claude Code session registers independently with its own pairing
 
@@ -116,7 +117,7 @@ Replace `/path/to/eyebrowse` with the actual path where you cloned the repo.
 
 **Daemon** -- Bun HTTP + WebSocket server on port 7890. Routes tool calls from the MCP server to the extension, manages session registration, window pairing, and authentication. Runs a stale session reaper every 2 minutes.
 
-**MCP Server** -- Thin MCP-protocol wrapper that exposes 20 tools over stdio. Communicates with the daemon via HTTP. Auto-starts the daemon if unreachable. Each instance registers as a session identified by the working directory name.
+**MCP Server** -- Thin MCP-protocol wrapper that exposes 21 tools over stdio. Communicates with the daemon via HTTP. Auto-starts the daemon if unreachable. Each instance registers as a session identified by the working directory name.
 
 ## Available Tools
 
@@ -141,6 +142,7 @@ Replace `/path/to/eyebrowse` with the actual path where you cloned the repo.
 | `list_tabs` | List all tabs in the paired Chrome window. |
 | `switch_tab` | Switch to a specific tab by its tab ID. |
 | `close_window` | Close the paired window or a specific window by ID. |
+| `evaluate` | Execute a JavaScript expression in the page and return the result. Use for bulk DOM data extraction. |
 | `print_to_pdf` | Export the current page as a PDF file. Returns the file path. |
 
 ## How It Works
@@ -160,7 +162,7 @@ Eyebrowse operates entirely locally. Your data never leaves your machine. No clo
 - **Local-only** -- The daemon binds to `localhost:7890`. The extension connects only to `ws://localhost:7890/ws`.
 - **Token authentication** -- The daemon generates a random UUID token on first run, stored at `~/.eyebrowse/daemon.token` with `0600` permissions. All HTTP requests require this token as a Bearer header. Constant-time comparison prevents timing attacks.
 - **Origin validation** -- WebSocket upgrades are rejected unless the origin starts with `chrome-extension://`.
-- **CDP allowlist** -- Only three Chrome DevTools Protocol commands are permitted: `Accessibility.getFullAXTree`, `Accessibility.getPartialAXTree`, and `Page.printToPDF`.
+- **CDP allowlist** -- Only four Chrome DevTools Protocol commands are permitted: `Accessibility.getFullAXTree`, `Accessibility.getPartialAXTree`, `Page.printToPDF`, and `Runtime.evaluate`.
 - **URL validation** -- `open_browser` and `navigate` only accept `http:` and `https:` URLs.
 - **Rate limiting** -- `open_browser` is limited to 3 calls per minute per session.
 - **Session isolation** -- Each MCP server instance registers as a separate session with independent window pairing.
