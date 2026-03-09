@@ -192,9 +192,20 @@ export function checkOpenBrowserRate(sessionId: string, limit: number): boolean 
 
 export function reapStaleSessions(): string[] {
   const reaped: string[] = [];
+  const now = Date.now();
+  const AUTO_IDLE_MS = 10 * 60 * 1000; // 10 minutes
 
   for (const [id, session] of sessions) {
-    if (session.pid === 0) continue; // auto-registered, no PID to check
+    if (session.pid === 0) {
+      // Auto-registered: reap if unpaired and idle for 10+ minutes
+      const isPaired = pairings.has(id);
+      const age = now - session.connectedAt;
+      if (!isPaired && age > AUTO_IDLE_MS) {
+        deregisterSession(id);
+        reaped.push(id);
+      }
+      continue;
+    }
 
     try {
       process.kill(session.pid, 0); // signal 0 = check existence
