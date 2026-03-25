@@ -168,6 +168,56 @@ app.get("/api/sessions", (c) => {
   return c.json({ sessions: listSessions() });
 });
 
+// POST /api/fetch — Headless-style fetch: open tab, grab text, close tab, return content
+// Usage: curl -X POST http://localhost:7890/api/fetch -H "Authorization: Bearer TOKEN" -d '{"url":"https://example.com"}'
+app.post("/api/fetch", async (c) => {
+  const token = extractBearerToken(c.req.header("Authorization"));
+  if (!token || !validateDaemonToken(token)) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  const body = await c.req.json().catch(() => ({}));
+  const url = (body as any)?.url as string | undefined;
+  if (!url) return c.json({ error: "url required" }, 400);
+
+  const sessionId = `fetch-${crypto.randomUUID()}`;
+  autoRegister(sessionId, "eyebrowse-fetch");
+
+  try {
+    // Open a new window with the URL
+    const openResult = await executeTool("open_browser", sessionId, { url });
+    if (!openResult.success) {
+      deregisterSession(sessionId);
+      return c.json({ error: `open_browser failed: ${openResult.error}` }, 500);
+    }
+
+    // Wait for page to settle (JS rendering)
+    await new Promise((r) => setTimeout(r, 3000));
+
+    // Extract text content
+    const evalResult = await executeTool("evaluate", sessionId, {
+      expression: "document.body.innerText",
+    });
+
+    const text = evalResult.success
+      ? String((evalResult.data as any)?.result ?? "")
+      : "";
+
+    // Close the window
+    await executeTool("close_window", sessionId, {});
+
+    // Deregister session
+    deregisterSession(sessionId);
+
+    return c.json({ success: true, url, text, length: text.length });
+  } catch (err) {
+    // Cleanup on error
+    try { await executeTool("close_window", sessionId, {}); } catch {}
+    deregisterSession(sessionId);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return c.json({ error: message }, 500);
+  }
+});
+
 // GET /api/windows
 app.get("/api/windows", (c) => {
   return c.json({ windows: listWindows() });
