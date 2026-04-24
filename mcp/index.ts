@@ -411,15 +411,28 @@ async function main() {
   console.log("[eyebrowse-mcp] server started on stdio");
 }
 
-process.on("SIGINT", async () => {
+let shuttingDown = false;
+async function shutdown(reason: string): Promise<never> {
+  if (shuttingDown) process.exit(0);
+  shuttingDown = true;
+  console.log(`[eyebrowse-mcp] shutting down: ${reason}`);
   await deregister();
   process.exit(0);
-});
+}
 
-process.on("SIGTERM", async () => {
-  await deregister();
-  process.exit(0);
-});
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGHUP", () => shutdown("SIGHUP"));
+
+// Parent (Claude Code) closes the stdio pipe when it exits. Without this,
+// the process gets reparented to init and spins forever.
+process.stdin.on("end", () => shutdown("stdin end"));
+process.stdin.on("close", () => shutdown("stdin close"));
+
+// Belt-and-suspenders: if we were reparented to init, the parent is gone.
+setInterval(() => {
+  if (process.ppid === 1) shutdown("orphaned (ppid=1)");
+}, 10_000).unref();
 
 process.on("beforeExit", async () => {
   await deregister();
